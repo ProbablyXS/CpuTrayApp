@@ -35,7 +35,9 @@
 
 ## Screenshot 
 
-<img width="302" height="92" alt="{09DBC937-7AEE-4E61-86AE-471B23BE11D2}" src="https://github.com/user-attachments/assets/3f90acc1-ad8b-4119-a55b-cd1df3771d8a" />
+## <img width="302" height="92" alt="{09DBC937-7AEE-4E61-86AE-471B23BE11D2}" src="https://github.com/user-attachments/assets/3f90acc1-ad8b-4119-a55b-cd1df3771d8a" />
+
+## <img width="479" height="235" alt="{50B64EE2-9FFF-4E1F-B106-DAAE6F36AEC5}" src="https://github.com/user-attachments/assets/0f9d8a4a-559e-4e9d-9cb0-21e5c003a972" />
 
 ---
 
