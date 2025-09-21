@@ -99,5 +99,4 @@ See the [LICENSE](LICENSE) file for details.
 ## Author
 
 - **Name**: [Your Name]  
-- **GitHub**: [https://github.com/your-username](https://github.com/your-username)  
-- **Contact**: [email@example.com](mailto:email@example.com)
+- **GitHub**: [https://github.com/your-username](https://github.com/ProbablyXS)  
