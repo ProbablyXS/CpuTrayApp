@@ -100,5 +100,5 @@ See the [LICENSE](LICENSE) file for details.
 
 ## Author
 
-- **Name**: [Your Name]  
+- **Name**: ProbablyXS  
 - **GitHub**: [https://github.com/your-username](https://github.com/ProbablyXS)  
