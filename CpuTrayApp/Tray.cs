@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Management;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace CpuTrayApp
@@ -109,23 +109,28 @@ namespace CpuTrayApp
             trayMenu.Items.Add(cpuMenu);
         }
 
-        // Get all available power plans on the system
+        // Get all available power plans on the system (language independent)
         private Dictionary<string, string> GetPowerPlans()
         {
             var plans = new Dictionary<string, string>();
             string output = RunPowerCfg("/L");
 
+            // Regex pour détecter un GUID
+            Regex guidRegex = new Regex(@"([a-fA-F0-9]{8}-([a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12})");
+
             foreach (var line in output.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries))
             {
-                if (line.Contains("GUID"))
+                var match = guidRegex.Match(line);
+                if (match.Success)
                 {
-                    int start = line.IndexOf("GUID:") + 5;
-                    int end = line.IndexOf('(', start);
-                    string guid = line.Substring(start, end - start).Trim();
+                    string guid = match.Groups[1].Value;
 
-                    int nameStart = line.IndexOf('(', start) + 1;
-                    int nameEnd = line.IndexOf(')', nameStart);
-                    string name = line.Substring(nameStart, nameEnd - nameStart);
+                    // Le nom est la partie après le GUID dans la ligne, on va la récupérer
+                    int guidIndex = line.IndexOf(guid) + guid.Length;
+                    string name = line.Substring(guidIndex).Trim();
+
+                    // Nettoyer le nom en enlevant les éventuels symboles * ou parenthèses autour
+                    name = name.Trim(new char[] { '*', ' ', '(', ')' });
 
                     plans[guid] = name;
                 }
@@ -144,17 +149,21 @@ namespace CpuTrayApp
             }
         }
 
-        // Fetch the GUID of the currently active power plan
+        // Fetch the GUID of the currently active power plan (language independent)
         private string GetActivePlanGuid()
         {
             string output = RunPowerCfg("/L");
+            Regex guidRegex = new Regex(@"([a-fA-F0-9]{8}-([a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12})");
+
             foreach (var line in output.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries))
             {
-                if (line.Contains("*") && line.Contains("GUID"))
+                if (line.Contains("*"))
                 {
-                    int start = line.IndexOf("GUID:") + 5;
-                    int end = line.IndexOf('(', start);
-                    return line.Substring(start, end - start).Trim();
+                    var match = guidRegex.Match(line);
+                    if (match.Success)
+                    {
+                        return match.Groups[1].Value;
+                    }
                 }
             }
             return null;
@@ -169,7 +178,8 @@ namespace CpuTrayApp
             string output = RunPowerCfg($"/query {activePlan} SUB_PROCESSOR {MaxProcessorStateGuid}");
             foreach (var line in output.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries))
             {
-                if (line.Trim().StartsWith("Current AC Power Setting Index"))
+                // Le texte ici peut être localisé, donc on recherche la ligne qui contient "Current AC Power Setting Index" en insensible à la casse
+                if (line.Trim().ToLower().Contains("current ac power setting index"))
                 {
                     string value = line.Split(':')[1].Trim();
                     if (value.StartsWith("0x"))
